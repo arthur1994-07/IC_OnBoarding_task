@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using IC_OnBoarding_task.Models;
 using Microsoft.EntityFrameworkCore;
 //Scaffold-DbContext "Server=ARTHUR;Database=Arthur_1;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -f
-
+// Scaffold-DbContext "Server=tcp:arthur1.database.windows.net,1433;Initial Catalog=IC_internship;Persist Security Info=False;User ID=arthurchiu;Password=Qwerty123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -f
 namespace IC_OnBoarding_task
 {
     public class Startup
