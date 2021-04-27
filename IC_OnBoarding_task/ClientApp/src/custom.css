@@ -1,0 +1,36 @@
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+code {
+  color: #E01A76;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: blue;
+  border-color: blueviolet;
+}
+.btn-secondary {
+  color: #fff;
+  background-color: red;
+  border-color: red;
+}
+
+.modal_test {
+  background-color: aqua;
+  border-color: red;
+}
+.button1 {
+  color : red;
+  background-color: purple;
+}
+.Modal {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  right: 40px;
+  bottom: 40px;
+  background-color: papayawhip;
+}
