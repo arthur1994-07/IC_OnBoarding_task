@@ -14,10 +14,12 @@ export class SalesIndex extends Component {
     super(props);
     this.state = {
       sales: [{
+        
       }],
        customers : [{}],
        products : [{}],
        stores : [{}],
+       currentCount : 0,
        editModal: false,
        deleteModal: false,
        createModal: false,
@@ -34,83 +36,45 @@ export class SalesIndex extends Component {
 
   }
   
+  incrementCounter = () => {
+    if (this.state.currentCount < this.state.sales.length){
+      this.setState({
+        currentCount: this.state.currentCount + 1,
+      });    
+      console.log("Sales ID will be: " + this.state.currentCount);
 
+    } 
+    // else if (this.state.currentCount > this.state.sales.length){
+    //   this.setState({
+    //     currentCount: this.state.sales.length,
+    //   });
+    // }
+      
+    console.log("sales length: "+ this.state.sales.length);
 
-  scroll_down = () => {
-    //console.log("accessing list :");
-    return (
-      <div>
-        <form onSubmit={this.submitHandler}>
-          <label>
-            Pick your item: </label>
-            <select value={this.state.drop_down_value} onChange={this.changeHandler_dropdown}>
-              {this.state.sales.map(s => {
-                return (
-                <option value={s.id}>{s.id}</option>
-                )
-              })}
-            </select>
-            </form>
-            <form onSubmit={this.submitHandler}>
-              <i>Customers: </i>
-            <select value={this.state.drop_down_value} onChange={this.changeHandler_dropdown}>
-                  {this.state.customers.map(c => {
-                    return (
-                    <option value={c.id}>{c.id}</option>
-                    )
-                })}
-                </select>
-                </form>
-              <form onSubmit={this.submitHandler}>
-
-                <i>Products:  </i>
-                <select value={this.state.drop_down_value} onChange={this.changeHandler_dropdown}>
-                  {this.state.products.map(p => {
-                    return (
-                    <option value={p.id}>{p.id}</option>
-                    )
-                })}
-                 </select>
-                 </form>
-                 <form onSubmit={this.submitHandler}>
-
-                 <i>Stores:  </i>
-                <select value={this.state.drop_down_value} onChange={this.changeHandler_dropdown}>
-                  {this.state.stores.map(s => {
-                    return (
-                    <option value={s.id}>{s.id}</option>
-                    )
-                })}
-                 </select>
-                 {/* <input type="submit" value="Submit" /> */}
-
-        </form>
-        <button onClick={() => this.changeHandler_dropdown}>select</button>
-
-      </div>
-    )
   }
+
+  
 // ---------------------------------------------------------------------
   changeHandler_dropdown = (e) => { // for dropdown select input
     console.log('dropdown value: '+ e.target.value); 
     this.setState({
-      drop_down_value : [e.target.value],
-      //[e.target.name]: e.target.value,
+      //drop_down_value : [e.target.value],
+      [e.target.name]: e.target.value,
     });
   }
 
-  submitHandler = e => { // console print dropdown selection 
-    e.preventDefault();
-    console.log("state value: "+ this.state.drop_down_value);
-  }
-
+ 
   //----------------------------------------------------------------------
   changeHandler_dropdown_customer = (e) => { // for dropdown select input
     console.log('dropdown customer: '+ e.target.value); 
     this.setState({
-      drop_down_customer : [e.target.value],
+      drop_down_customer : e.target.value,
+
       //[e.target.name]: e.target.value,
     });
+
+
   }
   submitHandler_customer = e => { // console print dropdown selection 
     e.preventDefault();
@@ -120,8 +84,10 @@ export class SalesIndex extends Component {
   changeHandler_dropdown_product = (e) => { // for dropdown select input
     console.log('dropdown product: '+ e.target.value); 
     this.setState({
-      drop_down_product : [e.target.value],
+      drop_down_product : e.target.value,
+     // products: this.state.drop_down_product,
       //[e.target.name]: e.target.value,
+      
     });
   }
   submitHandler_product = e => { // console print dropdown selection 
@@ -133,7 +99,8 @@ export class SalesIndex extends Component {
   changeHandler_dropdown_store = (e) => { // for dropdown select input
     console.log('dropdown store: '+ e.target.value); 
     this.setState({
-      drop_down_store : [e.target.value],
+      drop_down_store : e.target.value,
+      //stores: this.state.drop_down_store,
       //[e.target.name]: e.target.value,
     });
   }
@@ -148,18 +115,22 @@ export class SalesIndex extends Component {
 
 
   changeHandler = e => { // for text input 
-    this.setState({ 
-      [e.target.id]: e.target.value,  
-
+    this.setState({   
+       
+      id: this.state.sales.length + 1,
+      customer: this.state.drop_down_customer,
+      product: this.state.drop_down_product,
+      store: this.state.drop_down_store,
+      [e.target.name]: e.target.value, 
      })
+    
+    
   }
 
-
-  
-
-
-
-
+  submitHandler = e => { // console print dropdown selection 
+    e.preventDefault();
+    console.log("state value: "+ this.state.drop_down_value);
+  }
 
 
 
@@ -180,21 +151,7 @@ export class SalesIndex extends Component {
   
 
 
-  fetchSales = () => {
-    console.log("Fetching sales");
-    axios
-      .get("/Sales/GetSales")
-      .then((res) => {
-        console.log(res.data);
-        this.setState({
-          sales : res.data,
-        });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
-
+ 
   fetchCustomer = () => {
     console.log("Fetching Customer");
     axios
@@ -242,20 +199,32 @@ export class SalesIndex extends Component {
       });
   };
 
+  fetchSales = () => {
+    console.log("Fetching sales");
+    axios
+      .get("/Sales/GetSales")
+      .then((res) => {
+        console.log(res.data);
+        this.setState({
+          sales : res.data,
+        });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
 
 
  
   createSales = e => {
     e.preventDefault();
     console.log(this.state);
-    axios.post(`/Sales/PostSales`, this.state
-      // {
-      //   id: 10,
-      //   name: "Cust4",
-      //   address: "HK",
-      //   email: "arthurchiuchiu@outlook.com",
-      // }  
-    )
+    if (this.state.currentCount >= this.state.sales.length) {
+      axios.post(`/Sales/PostSales`, this.state, 
+      )
+    }
+    this.incrementCounter();
+
     console.log(this.state);
     this.fetchSales();
   }
@@ -303,7 +272,7 @@ export class SalesIndex extends Component {
                 <h1>Create New Sales</h1>
                 <form onSubmit={this.submitHandler}>
                 <i>Date Sold:  </i><br></br>
-                <input type="text" id="dateSold" onChange={this.changeHandler}/>
+                <input type="text" name="dateSold" onChange={this.changeHandler}/>
                 </form>
 
                 <form onSubmit={this.submitHandler_customer}>

@@ -29,7 +29,7 @@ namespace IC_OnBoarding_task.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=ARTHUR\\MSSQLSERVER01;Database=IC_intership;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=tcp:arthur1.database.windows.net,1433;Initial Catalog=IC_intership;Persist Security Info=False;User ID=arthurchiu;Password=Qwerty123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
 
@@ -92,17 +92,17 @@ namespace IC_OnBoarding_task.Models
                 entity.HasOne(d => d.CustomerNavigation)
                     .WithMany(p => p.Sales)
                     .HasForeignKey(d => d.CustomerId)
-                    .HasConstraintName("FK__Sales__CustomerI__6FE99F9F");
+                    .HasConstraintName("FK__Sales__CustomerI__628FA481");
 
                 entity.HasOne(d => d.ProductNavigation)
                     .WithMany(p => p.Sales)
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK__Sales__ProductID__70DDC3D8");
+                    .HasConstraintName("FK__Sales__ProductID__6383C8BA");
 
                 entity.HasOne(d => d.StoreNavigation)
                     .WithMany(p => p.Sales)
                     .HasForeignKey(d => d.StoreId)
-                    .HasConstraintName("FK__Sales__StoreID__71D1E811");
+                    .HasConstraintName("FK__Sales__StoreID__6477ECF3");
             });
 
             modelBuilder.Entity<Store>(entity =>

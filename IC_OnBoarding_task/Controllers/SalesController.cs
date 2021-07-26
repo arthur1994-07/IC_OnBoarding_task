@@ -90,6 +90,7 @@ namespace IC_OnBoarding_task.Controllers
             {
                 if (SalesExists(sales.Id))
                 {
+
                     return Conflict();
                 }
                 else

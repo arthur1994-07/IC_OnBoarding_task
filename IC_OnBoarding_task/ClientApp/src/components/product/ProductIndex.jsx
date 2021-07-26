@@ -11,25 +11,44 @@ export class ProductIndex extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      products: [{
-      }],
-       editModal: false,
-       deleteModal: false,
-       createModal: false,
-       a_vec : [1, 2, 3, 4, 5],       
+      currentCount: 0,
+      products: [],  
+      editModal: false,
+      deleteModal: false,
+      createModal: false,
+      a_vec : [1, 2, 3, 4, 5],       
     };
     
   }
 
-  changeHandler = e => {
-    this.setState({ 
-      [e.target.id]: e.target.value,
-      [e.target.name]: e.target.value,
-      [e.target.price]: e.target.value,  
-     })
-
+  incrementCounter = () => {
+    var last_id = Math.max.apply(null, this.state.products.map(prod => prod.id))      
+    this.setState({
+        id: last_id + 1,
+      });    
+      console.log("ID will be: " + this.state.currentCount);
+    console.log("product length: "+ this.state.products.length);
 
   }
+
+
+  changeHandler = e => {
+    this.setState({ 
+      [e.target.name]: e.target.value,
+      [e.target.price]: e.target.value,
+     })
+  }
+
+  changeHandler2 = e => {
+    this.setState({
+      id: this.state.currentCount,
+      [e.target.name]: e.target.value,
+      [e.target.price]: e.target.value,
+    })
+  }
+
+
+
   submitHandler = e => {
     e.preventDefault();
     console.log(this.state);
@@ -51,30 +70,24 @@ export class ProductIndex extends Component {
       });
   };
 
-   cus1 = {
-
-  }
+  
 
   createProduct = e => {
+    this.incrementCounter();
     e.preventDefault();
-    console.log(this.state);
-    axios.post(`/Products/PostProduct`, //this.state
-      // {
-      //   //id: 10,
-      //   name: "Cust4",
-      //   address: "HK",
-      //   email: "arthurchiuchiu@outlook.com",
-      // } 
-
-    )
+    //console.log(this.state);
+      axios.post(`/Products/PostProduct`, {
+        id: this.state.id,
+        name: this.state.name,
+        price: this.state.price
+      })
     .then(res => {
-      console.log(res.date)
+      console.log(res)
     })
-    .catch((e) => {
+    .catch(e => {
+      this.fetchCustomer();
       console.log(e);
     });
-    console.log(this.state);
-    this.fetchProduct();
   }
 
   putProduct = (id) => { // take putProduct_by_id from MVC controller 
@@ -82,7 +95,6 @@ export class ProductIndex extends Component {
     console.log(this.state);
     axios.put("/Products/Put_Product_by_id/"+id , this.state
     )
-
     console.log(this.state);
     console.log("put at: "+ id);
     this.fetchProduct();
@@ -102,11 +114,14 @@ export class ProductIndex extends Component {
   //------------------------------------ Modal functions---------------------------------------------
 
   createModalOn = () => {
+    
     this.setState({
+      // currentCount : this.state.currentCount + 1,
       createModal : true
     })
     console.log("create modal on");
   }
+
   createModalOff = () => {
     this.setState({
       createModal : false
@@ -121,7 +136,7 @@ export class ProductIndex extends Component {
               <Modal open={this.state.createModal} onClose={this.createModalOff} >
                 <h1>Create new Product</h1>
                 <form>
-                  <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br>
+                  {/* <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br> */}
                   <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
                   <i>Price: </i><br></br><input type="text" name="price" onChange={this.changeHandler}/>
                 </form>
@@ -168,9 +183,9 @@ export class ProductIndex extends Component {
                 <div>
                   <h2>Edit Product</h2>
                   <form>
-                    <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br>
-                    <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
-                    <i>Price: </i><br></br><input type="text" name="price" onChange={this.changeHandler}/>
+                    {/* <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br> */}
+                    <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler2}/><br></br>
+                    <i>Price: </i><br></br><input type="text" name="price" onChange={this.changeHandler2}/>
                   </form>
                 <Button className="btn btn-primary" onClick={() => this.putProduct(id)}>update</Button>
                 </div>         

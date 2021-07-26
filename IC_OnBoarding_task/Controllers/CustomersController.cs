@@ -116,6 +116,21 @@ namespace IC_OnBoarding_task.Controllers
         // POST: api/Customers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create([Bind("Id,CusName,Address,Email,Dor")] Customer customer)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(customer); // adding customer to the context, everytime you modify/manipulate the context, you have to save it 
+        //        await _context.SaveChangesAsync(); // when sql database is updated
+        //        return RedirectToAction(nameof(Index)); // sending back to customer index page
+        //    }
+        //    return View(customer);
+        //}
+
+
         [HttpPost]
         public async Task<ActionResult<Customer>> PostCustomer(Customer customer)
         {
@@ -124,12 +139,16 @@ namespace IC_OnBoarding_task.Controllers
             {
                 await _context.SaveChangesAsync();
             }
+
             catch (DbUpdateException)
             {
+                
                 if (CustomerExists(customer.Id))
                 {
+                    
                     return Conflict();
                 }
+                
                 else
                 {
                     throw;
@@ -137,6 +156,8 @@ namespace IC_OnBoarding_task.Controllers
             }
 
             return CreatedAtAction("GetCustomer", new { id = customer.Id }, customer);
+            //return CreatedAtAction("GetCustomer", new { name = customer.Name }, customer);
+
         }
 
         [HttpPut("{id}")]
@@ -145,7 +166,8 @@ namespace IC_OnBoarding_task.Controllers
             //if (id != customer.Id)
             if (id != customer.Id)
             {
-                return NotFound();
+                //return NotFound();
+                customer.Id = id;
             }
 
             if (ModelState.IsValid)

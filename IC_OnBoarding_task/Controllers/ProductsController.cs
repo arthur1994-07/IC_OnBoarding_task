@@ -106,7 +106,8 @@ namespace IC_OnBoarding_task.Controllers
             //if (id != customer.Id)
             if (id != product.Id)
             {
-                return NotFound();
+                //return NotFound();
+                product.Id = id;
             }
 
             if (ModelState.IsValid)

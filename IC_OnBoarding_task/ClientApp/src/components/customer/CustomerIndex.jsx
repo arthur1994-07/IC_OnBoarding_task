@@ -5,6 +5,9 @@ import { Modal } from 'react-responsive-modal';
 import 'react-responsive-modal/styles.css';
 import { Col, Image , Icon, Label, Menu, Table , TableCell, Button, Popup, Placeholder, Header} from 'semantic-ui-react'
 import { tokenToString } from 'typescript';
+import { throwStatement } from '@babel/types';
+import "bootstrap/dist/css/bootstrap.min.css";
+
 
 
 export class CustomerIndex extends Component {
@@ -12,28 +15,57 @@ export class CustomerIndex extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      customers: [{
-      }],
-       editModal: false,
-       deleteModal: false,
-       createModal: false,
-       a_vec : [1, 2, 3, 4, 5],       
-    };
-    
+      test_count: 1,
+      customers: [],
+      editModal: false,
+      deleteModal: false,
+      createModal: false,
+    }
+    this.incrementCounter = this.incrementCounter.bind(this);
+    this.createCustomer = this.createCustomer.bind(this);
+    this.deleteCustomer = this.deleteCustomer.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
+  
+  }
+  
+  updateState = () => {
+    console.log('Changing state');
+    this.setState({test_count: this.state.test_count + 1}, () => { console.log("new state",this.state);})
   }
   // 
-  changeHandler = e => {
-    this.setState({ 
-      [e.target.id]: e.target.value,
-      [e.target.name]: e.target.value,
-      [e.target.address]: e.target.value,  
-     })
-  }
 
-  submitHandler = e => {
-    e.preventDefault();
-    console.log(this.state);
-  }
+  incrementCounter = () => {
+    var last_id = Math.max.apply(Math,this.state.customers.map(cus => cus.id)) ; 
+    
+    // if (last_id === 0) {
+    //   alert("Error");
+    // }
+    // else
+    // { 
+      this.setState({id: last_id + 1} , () => {
+        console.log("highest ID : " + last_id);
+        console.log("ID will be: " + this.state.id);
+      }) 
+    }
+ // }
+    
+
+  
+  changeHandler = e => {
+      this.setState({
+        [e.target.name]: e.target.value,
+        [e.target.address]: e.target.value,
+      }, 
+      () => { 
+        console.log("handler state: " + this.state);
+      }
+      );    
+    };
+    // e.target.value => selected input / typed input
+    // [e.target.name] => input field name 
+  //}
+
+
 
 //--------------------------------Http axios functions---------------------------------------
   
@@ -51,36 +83,64 @@ export class CustomerIndex extends Component {
       .catch((e) => {
         console.log(e);
       });
-  };
-
-  createCustomer = e => {
-    e.preventDefault();
-    console.log(this.state);
-    axios.post(`/Customers/PostCustomer`, this.state,
-    // {
-    //     id: 10,
-    //     name: "Cust4",
-    //     address: "HK",
-    //     email: "arthurchiuchiu@outlook.com",
-    //   }
-
-    )
-    console.log(this.state);
-    this.fetchCustomer();
   }
 
-  putCustomer = (id) => { // take putCustomer_by_id from MVC controller 
+  createCustomer = e => {
 
+
+    console.log(this.state);
+    e.preventDefault();
+    this.incrementCounter();
+    
+    
+
+      axios.post(`/Customers/PostCustomer`, {
+        id: this.state.id,
+        name: this.state.name,
+        address: this.state.address 
+      })
+      .then(json => {
+        if (json){
+        alert("Data Saved Successfully");
+        this.props.history.push('/customer')
+      }
+      else {
+        alert('Data not saved');
+        this.props.history.push('/customer')}
+      })
+      this.createModalOff();
+      
+      this.fetchCustomer();  
+      this.props.history.push('/customer');
+    }
+    
+
+
+  // createCustomer2 = e => {
+  //   e.preventDefault();
+  //   //console.log(this.state);
+  //   this.incrementCounter();
+  //   axios.post(`/Customers/PostCustomer` ,
+  //     {
+
+  //       id: this.state.currentCount,
+  //       name: "Arthur from state",
+  //       address: "this.state",
+        
+  //     }
+  //   )
+  //   console.log("Customer: "+ this.state.customers);    
+  //   console.log(this.state);
+  //   this.fetchCustomer();
+  // }
+  putCustomer = (id) => { // take putCustomer_by_id from MVC controller 
     console.log(this.state);
     axios.put("/Customers/Put_Customer_by_id/"+id , this.state
     )
-
     console.log(this.state);
     console.log("put at: "+ id);
     this.fetchCustomer();
   }
-
-
   deleteCustomer = (id) => {
     axios.delete("/Customers/DeleteCustomer/"+id)
     .then(res => {
@@ -96,8 +156,6 @@ export class CustomerIndex extends Component {
   //------------------------------------ Modal functions---------------------------------------------
 
 
-  
-
 
   createModalOn = () => {
     this.setState({
@@ -112,6 +170,8 @@ export class CustomerIndex extends Component {
     console.log("create modal off");
   }
 
+
+
   displaycreateModal = () => { 
     return ( 
       <div>
@@ -119,12 +179,11 @@ export class CustomerIndex extends Component {
               <Modal open={this.state.createModal} onClose={this.createModalOff} >
                 <h1>Create new Customer</h1>
                 <form>
-                  <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br>
-                  <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
-                  <i>Address: </i><br></br><input type="text" name="address" onChange={this.changeHandler}/>
+                  <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler.bind(this)}/><br></br>
+                  <i>Address: </i><br></br><input type="text" name="address" onChange={this.changeHandler.bind(this)}/>
                 </form>
-                <h2>Enter new Customers Name</h2> 
-                <Button className="btn btn-primary" onClick={this.createCustomer}>Create</Button>
+                <br></br>
+                <Button className="btn btn-primary" onClick={this.createCustomer.bind(this)}>Create</Button>
               </Modal>   
       </div>
     )
@@ -132,26 +191,21 @@ export class CustomerIndex extends Component {
   editModalOn = (id) => {
     this.setState({
       editModal: 
-      //true
       {
         [id] : true,
       },
     });
     console.log("edit modal on "+ id);
   }
-
-
   editModalOff = (id) => {
     this.setState({
-      editModal : 
-      false
+      editModal : false
       // {
       //    [id] : false,
       // },
     }) 
     console.log("edit  modal off");
   }
-
 
   displayeditModal = (id) => {
     return (
@@ -167,29 +221,21 @@ export class CustomerIndex extends Component {
                 <div>
                   <h2>Edit Customer</h2>
                   <form>
-                    <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br>
+                    {/* <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler2}/><br></br> */}
                     <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
                     <i>Address: </i><br></br><input type="text" name="address" onChange={this.changeHandler}/>
                   </form>
-                <Button className="btn btn-primary" onClick={() => this.putCustomer(id)}>update</Button>
+                <Button className="btn btn-primary" onClick={() => this.putCustomer(id)} >update</Button>
                 </div>
-                
               </Modal>   
-
-
       </div>
     )
   }
   deleteModalOn = (id) => {
-    this.setState({
-      deleteModal: 
-      //true
-      {
-        [id] : true
-      }
-    })
-    console.log("delete modal on");
+    this.setState({deleteModal: {[id] : true}})
+    console.log("delete modal on: "+ id);
   }
+
   deleteModalOff = () => {
     this.setState({
       deleteModal : false
@@ -213,20 +259,27 @@ export class CustomerIndex extends Component {
 
   componentDidMount()  {
     console.log("Component did mount");
+    document.title = `customer ID is ${this.state.id}`;
     this.fetchCustomer();
+  }
+  componentDidUpdate() {
+    console.log("Component did update!!!!!!!!");
+    console.log("STATE: ", this.state);
+
   }
 
 
+
+
   render() {
-      const { customers } = this.state;
-      //const { id, name, address } = this.state.customers;
-      // console.log(this.state.a_vec);
-      // const mapped_vec = this.state.a_vec.map((num) => num *2);
-      // console.log(mapped_vec);
-      
+      const { customers } = this.state;      
     return (
       <div>
         <h1>Customer</h1>
+        <div>
+        <button onClick={this.updateState}>Change state</button>
+        <h2>ID: {this.state.id} </h2>
+        </div>
         {/* <button className="btn btn-primary" onClick={this.createCustomer}>New Customer</button> */}
         {this.displaycreateModal()}
         {/* <button className="btn btn-primary" onClick={this.onClickButton}>Modal</button> */}

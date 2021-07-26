@@ -10,10 +10,7 @@ export class StoreIndex extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      stores : [{
-      }],
-      customers : [{}],
-      products : [{}],
+      currentCount: 0,
       stores : [{}],
        editModal: false,
        deleteModal: false,
@@ -24,12 +21,27 @@ export class StoreIndex extends Component {
   }
   changeHandler = e => {
     this.setState({ 
-      [e.target.id]: e.target.value,
+      id: this.state.stores.length + 1 ,
       [e.target.name]: e.target.value,
       [e.target.address]: e.target.value,  
      })
+  }
 
-
+  changeHandler2 = e => {
+    this.setState({
+      id: this.state.currentCount,
+      [e.target.name]: e.target.value,
+      [e.target.address]: e.target.value,
+    })
+  }
+  incrementCounter = () => {
+    if (this.state.currentCount < this.state.stores.length){
+      this.setState({
+        currentCount: this.state.currentCount + 1,
+      });    
+      console.log("ID will be: " + this.state.currentCount);
+    }
+    console.log("customers length: "+ this.state.stores.length);
   }
   submitHandler = e => {
     e.preventDefault();
@@ -56,15 +68,17 @@ export class StoreIndex extends Component {
   createStores = e => {
     e.preventDefault();
     console.log(this.state);
-    axios.post(`/Stores/PostStore`, this.state
+    if (this.state.currentCount >= this.state.stores.length){
+      axios.post(`/Stores/PostStore`, this.state
       // {
       //   id: 10,
       //   name: "Cust4",
       //   address: "HK",
       //   email: "arthurchiuchiu@outlook.com",
       // }  
-
-    )
+      )
+    }
+    this.incrementCounter();
     console.log(this.state);
     this.fetchStore();
   }
@@ -111,7 +125,7 @@ export class StoreIndex extends Component {
               <Modal open={this.state.createModal} onClose={this.createModalOff} >
                 <h1>Create new Store</h1>
                 <form>
-                  <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br>
+                  {/* <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br> */}
                   <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
                   <i>Address: </i><br></br><input type="text" name="address" onChange={this.changeHandler}/>
                 </form>
@@ -158,9 +172,9 @@ export class StoreIndex extends Component {
                 <div>
                   <h2>Edit Store</h2>
                   <form>
-                    <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br>
-                    <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
-                    <i>Address: </i><br></br><input type="text" name="address" onChange={this.changeHandler}/>
+                    {/* <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br> */}
+                    <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler2}/><br></br>
+                    <i>Address: </i><br></br><input type="text" name="address" onChange={this.changeHandler2}/>
                   </form>
                 <Button className="btn btn-primary" onClick={() => this.putStore(id)}>update</Button>
                 </div>         
