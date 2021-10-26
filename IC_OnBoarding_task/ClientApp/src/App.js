@@ -5,7 +5,6 @@ import { Home } from './components/Home';
 import { FetchData } from './components/FetchData';
 import { Counter } from './components/Counter';
 import { CustomerIndex } from "./components/customer/CustomerIndex";
-import { CustomerListTable } from "./components/customer/CustomerListTable";
 import { ProductIndex } from "./components/product/ProductIndex";
 import { StoreIndex } from "./components/store/StoreIndex";
 import { SalesIndex } from "./components/sales/SalesIndex";
@@ -28,7 +27,6 @@ export default class App extends Component {
         <Route path='/sales' component={SalesIndex} />
         <Route path='/modal' component={ModalInClassComponents} />
         <Route path='/flavorform' component={FlavorForm} />
-
 
       </Layout>
     );

@@ -13,6 +13,7 @@ export class Counter extends Component {
     this.setState({
       currentCount: this.state.currentCount + 1
     });
+    console.log("Current Count in console: "+this.state.currentCount);
   }
 
   render() {

@@ -13,29 +13,50 @@ export class SalesIndex extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      sales: [{
-        
-      }],
+      sales: [{}],
        customers : [{}],
        products : [{}],
        stores : [{}],
+       last_id : 0,
+
        currentCount : 0,
        editModal: false,
        deleteModal: false,
        createModal: false,
        a_vec : [1, 2, 3, 4, 5],    
        drop_down_value: '' ,
-      //  drop_down_id: '' ,
        drop_down_customer: '',
        drop_down_product: '',
        drop_down_store: '',
-      //  date_sold: '',
     };
     
     const { customers, sales, products, stores } = this.state;
-
   }
   
+
+  increment = () => {
+    this.setState({
+      id: this.state.id + 1,
+    })
+    console.log("ID: "+ this.state.id);
+  }
+  highestIDReturn = () => {
+    if (this.state.sales.length === 0){
+      console.log("sales length: 0");
+      this.setState({ id: 1 })
+    }
+    else if (this.state.id > 0) {
+          var last_id = Math.max.apply(Math,this.state.sales.map(sa => sa.id)); 
+          console.log("Last id: "+ last_id);  
+          this.setState({ id: last_id + 1 } , () => {
+          console.log("highest ID : " + last_id);
+          console.log("ID will be: " + this.state.id);
+          //alert("ID :" + this.state.id);
+          }) 
+        }
+    else { alert("No Action"); }    
+    }
+
   incrementCounter = () => {
     if (this.state.currentCount < this.state.sales.length){
       this.setState({
@@ -44,11 +65,7 @@ export class SalesIndex extends Component {
       console.log("Sales ID will be: " + this.state.currentCount);
 
     } 
-    // else if (this.state.currentCount > this.state.sales.length){
-    //   this.setState({
-    //     currentCount: this.state.sales.length,
-    //   });
-    // }
+
       
     console.log("sales length: "+ this.state.sales.length);
 
@@ -70,11 +87,7 @@ export class SalesIndex extends Component {
     console.log('dropdown customer: '+ e.target.value); 
     this.setState({
       drop_down_customer : e.target.value,
-
-      //[e.target.name]: e.target.value,
     });
-
-
   }
   submitHandler_customer = e => { // console print dropdown selection 
     e.preventDefault();
@@ -100,8 +113,7 @@ export class SalesIndex extends Component {
     console.log('dropdown store: '+ e.target.value); 
     this.setState({
       drop_down_store : e.target.value,
-      //stores: this.state.drop_down_store,
-      //[e.target.name]: e.target.value,
+
     });
   }
   submitHandler_store = e => { // console print dropdown selection 
@@ -111,20 +123,13 @@ export class SalesIndex extends Component {
 
 
   //---------------------------------------------------------------------
-
-
-
   changeHandler = e => { // for text input 
-    this.setState({   
-       
-      id: this.state.sales.length + 1,
+    this.setState({      
       customer: this.state.drop_down_customer,
       product: this.state.drop_down_product,
       store: this.state.drop_down_store,
-      [e.target.name]: e.target.value, 
+      dateSold: e.target.value, 
      })
-    
-    
   }
 
   submitHandler = e => { // console print dropdown selection 
@@ -132,26 +137,20 @@ export class SalesIndex extends Component {
     console.log("state value: "+ this.state.drop_down_value);
   }
 
-
-
-  getSales_by_id = (id) =>{
-    console.log("get sales by id");
-    axios
-    .get("Sales/GetSales"/+id)
-    .then((res) => {
-      console.log(res.data);
-      this.setState({
-        sales : res.data,
-      });
-    })
-    .catch((e) => {
-      console.log(e);
-    });
-  };
-  
-
-
- 
+  // getSales_by_id = (id) =>{
+  //   console.log("get sales by id");
+  //   axios
+  //   .get("Sales/GetSales"/+id)
+  //   .then((res) => {
+  //     console.log(res.data);
+  //     this.setState({
+  //       sales : res.data,
+  //     });
+  //   })
+  //   .catch((e) => {
+  //     console.log(e);
+  //   });
+  // };
   fetchCustomer = () => {
     console.log("Fetching Customer");
     axios
@@ -218,25 +217,52 @@ export class SalesIndex extends Component {
  
   createSales = e => {
     e.preventDefault();
+    this.increment();
     console.log(this.state);
-    if (this.state.currentCount >= this.state.sales.length) {
-      axios.post(`/Sales/PostSales`, this.state, 
-      )
-    }
-    this.incrementCounter();
-
-    console.log(this.state);
+    axios.post(`/Sales/PostSales`, {
+      id: this.state.id,
+      dateSold: this.state.dateSold,
+      customer: this.state.drop_down_customer,
+      product: this.state.drop_down_product,
+      store: this.state.drop_down_store,
+    })
+    .then(json => {
+      if (json) {
+        alert("Data Saved Successfully");
+        this.props.history.push('/sales')
+        this.fetchSales();
+      }
+      else {
+        alert('Data not saved');
+        this.props.history.push('/sales')
+      }
+    })
+    this.createModalOff();
+    this.props.history.push('/sales')
     this.fetchSales();
-  }
+    }
 
   putSales = (id) => { // take putProduct_by_id from MVC controller 
-    console.log(this.state);
-    axios.put("/Sales/Put_Sales_by_id/"+id , this.state
-    )
-    console.log(this.state);
-    console.log("put at: "+ id);
-    this.fetchProduct();
-  }
+      axios.put("/Sales/Put_Sales_by_id/"+id , {
+        id: this.state.id,
+        dateSold: this.state.dateSold,
+        customer: this.state.drop_down_customer,
+        product: this.state.drop_down_product,
+        store: this.state.drop_down_store,
+      })
+      console.log(this.state);
+      console.log("put at: "+ id);
+      this.fetchSales();
+    }
+
+  // putSales = (id) => { // take putProduct_by_id from MVC controller 
+  //   console.log(this.state);
+  //   axios.put("/Sales/Put_Sales_by_id/"+id , this.state
+  //   )
+  //   console.log(this.state);
+  //   console.log("put at: "+ id);
+  //   this.fetchProduct();
+  // }
 
   deleteSales = (id) => {
     axios.delete("/Sales/DeleteSales/"+id)
@@ -244,7 +270,7 @@ export class SalesIndex extends Component {
       console.log(res)
     })
     .catch(e => {
-      this.fetchProduct();
+      this.fetchSales();
       console.log(e);
     });
   }
@@ -255,6 +281,7 @@ export class SalesIndex extends Component {
     this.setState({
       createModal : true
     })
+    this.highestIDReturn();
     console.log("create modal on");
   }
   createModalOff = () => {
@@ -358,7 +385,6 @@ export class SalesIndex extends Component {
               })}
               </select>
               </form>
-
               <form onSubmit={this.submitHandler_product}>
               <br></br><i>Products:  </i><br></br>
               <select value={this.state.drop_down_product} onChange={this.changeHandler_dropdown_product}>
@@ -369,7 +395,6 @@ export class SalesIndex extends Component {
               })}
                </select>
                </form>
-
                <form onSubmit={this.submitHandler_store}>
                <br></br><i>Stores:  </i><br></br>
               <select value={this.state.drop_down_store} onChange={this.changeHandler_dropdown_store}>
@@ -390,7 +415,6 @@ export class SalesIndex extends Component {
   deleteModalOn = (id) => {
     this.setState({
       deleteModal: 
-      //true
       {
         [id] : true
       }
@@ -403,6 +427,7 @@ export class SalesIndex extends Component {
     })
     console.log("delete modal off");
   }
+
   displaydeleteModal = (id) => {
     return (
       <div>
@@ -422,26 +447,29 @@ export class SalesIndex extends Component {
 
   componentDidMount()  {
     console.log("Component did mount");
+    this.setState({id: 1});
     this.fetchProduct();
     this.fetchStore();
     this.fetchCustomer();
-    this.fetchSales(); // it will fetch all data but only display the sales since its the final line of code 
-    
+    this.fetchSales(); // it will fetch all data but only display the sales since its the final line of code  
+  }
+  componentDidUpdate() {
+    console.log("Component did update!!!!!!!!");
+    //this.highestIDReturn();
+    //console.log("STATE: ", this.state);
   }
 
   render() {
     const { sales, customers , stores, products } = this.state;
-    //const { id, name, address } = this.state.customers;
-    // console.log(this.state.a_vec);
-    // const mapped_vec = this.state.a_vec.map((num) => num *2);
-    // console.log(mapped_vec);
+
 
     return (
       <div>
         <h1>Sales</h1>
-        {/* <button className="btn btn-primary" onClick={this.createCustomer}>New Customer</button> */}
         {this.displaycreateModal()}
-        {/* <button className="btn btn-primary" onClick={this.onClickButton}>Modal</button> */}
+        <h2>ID: {this.state.id} </h2>
+        <button onClick={this.highestIDReturn}>Return highest ID</button>
+        <button onClick={this.increment}>Increment</button>
         <Table celled>
           <Table.Header>
           <Table.Row>

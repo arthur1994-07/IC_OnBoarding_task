@@ -9,44 +9,53 @@ import { tokenToString } from 'typescript';
 export class StoreIndex extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      currentCount: 0,
-      stores : [{}],
+      last_id: 0,
+      stores : [],
        editModal: false,
        deleteModal: false,
        createModal: false,
-       a_vec : [1, 2, 3, 4, 5],       
     };
     
   }
-  changeHandler = e => {
-    this.setState({ 
-      id: this.state.stores.length + 1 ,
-      [e.target.name]: e.target.value,
-      [e.target.address]: e.target.value,  
-     })
+
+  increment = () => {
+    this.setState({
+      id: this.state.id + 1,
+    })
+    console.log("ID: "+ this.state.id);
   }
 
-  changeHandler2 = e => {
+  highestIDReturn = () => {
+    if (this.state.stores.length === 0){
+      console.log("store length: 0");
+      this.setState({ id: 1})
+    }
+    else if (this.state.id > 0) {
+          var last_id = Math.max.apply(Math,this.state.stores.map(st => st.id)); 
+          console.log("Last id: "+ last_id);  
+          this.setState({ id: last_id + 1 } , () => {
+          console.log("highest ID : " + last_id);
+          console.log("ID will be: " + this.state.id);
+          //alert("ID :" + this.state.id);
+          }) 
+        }
+    else { alert("No Action"); }    
+    }
+
+  changeHandler = e => {
     this.setState({
-      id: this.state.currentCount,
       [e.target.name]: e.target.value,
       [e.target.address]: e.target.value,
-    })
-  }
-  incrementCounter = () => {
-    if (this.state.currentCount < this.state.stores.length){
-      this.setState({
-        currentCount: this.state.currentCount + 1,
-      });    
-      console.log("ID will be: " + this.state.currentCount);
+    }, 
+    () => { 
+      console.log("handler state: " + this.state);
     }
-    console.log("customers length: "+ this.state.stores.length);
-  }
-  submitHandler = e => {
-    e.preventDefault();
-    console.log(this.state);
-  }
+    );    
+  };
+
+//--------------------------------Http axios functions---------------------------------------
 
   fetchStore = () => {
     console.log("Fetching Store");
@@ -56,7 +65,6 @@ export class StoreIndex extends Component {
         console.log(res.data);
         this.setState({
           stores : res.data,
-          //openModal: false
         });
       })
       .catch((e) => {
@@ -65,23 +73,29 @@ export class StoreIndex extends Component {
   };
 
 
-  createStores = e => {
+  createStore = e => {
     e.preventDefault();
-    console.log(this.state);
-    if (this.state.currentCount >= this.state.stores.length){
-      axios.post(`/Stores/PostStore`, this.state
-      // {
-      //   id: 10,
-      //   name: "Cust4",
-      //   address: "HK",
-      //   email: "arthurchiuchiu@outlook.com",
-      // }  
-      )
+    this.increment();
+    axios.post(`/Stores/PostStore`, {
+      id: this.state.id,
+      name: this.state.name,
+      address: this.state.address
+    })
+    .then(json => {
+      if(json) {
+        alert("Data Saved Successfully");
+        this.props.history.push('/store')
+        this.fetchStore();
+      }
+      else {
+        alert('Data not saved');
+        this.props.history.push('/store')}
+      })
+      this.createModalOff();
+       
+      this.props.history.push('/store');
+      this.fetchStore(); 
     }
-    this.incrementCounter();
-    console.log(this.state);
-    this.fetchStore();
-  }
 
   putStore = (id) => { // take putProduct_by_id from MVC controller 
 
@@ -109,6 +123,7 @@ export class StoreIndex extends Component {
     this.setState({
       createModal : true
     })
+    this.highestIDReturn();
     console.log("create modal on");
   }
   createModalOff = () => {
@@ -125,12 +140,10 @@ export class StoreIndex extends Component {
               <Modal open={this.state.createModal} onClose={this.createModalOff} >
                 <h1>Create new Store</h1>
                 <form>
-                  {/* <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br> */}
                   <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
                   <i>Address: </i><br></br><input type="text" name="address" onChange={this.changeHandler}/>
                 </form>
-                <h2>Enter new Store Name</h2> 
-                <Button className="btn btn-primary" onClick={this.createStores}>Create</Button>
+                <Button className="btn btn-primary" onClick={this.createStore}>Create</Button>
               </Modal>   
       </div>
     )
@@ -139,10 +152,7 @@ export class StoreIndex extends Component {
   editModalOn = (id) => {
     this.setState({
       editModal: 
-      //true
-      {
-        [id] : true,
-      },
+      { [id] : true },
     });
     console.log("edit modal on "+ id);
   }
@@ -150,12 +160,7 @@ export class StoreIndex extends Component {
 
   editModalOff = (id) => {
     this.setState({
-      editModal : 
-      false
-      // {
-      //    [id] : false,
-      // },
-    }) 
+      editModal : false}) 
     console.log("edit  modal off");
   }
 
@@ -186,10 +191,7 @@ export class StoreIndex extends Component {
   deleteModalOn = (id) => {
     this.setState({
       deleteModal: 
-      //true
-      {
-        [id] : true
-      }
+      {[id] : true }
     })
     console.log("delete modal on");
   }
@@ -216,21 +218,24 @@ export class StoreIndex extends Component {
 
   componentDidMount()  {
     console.log("Component did mount");
+    this.setState({id: 1});
     this.fetchStore();
   }
+  componentDidUpdate() {
+    console.log("Component did update!!!!!!!!");
+    //this.highestIDReturn();
+    //console.log("STATE: ", this.state);
+  }
+
   render() {
     const { stores } = this.state;
-    //const { id, name, address } = this.state.customers;
-    // console.log(this.state.a_vec);
-    // const mapped_vec = this.state.a_vec.map((num) => num *2);
-    // console.log(mapped_vec);
-
     return (
       <div>
         <h1>Store</h1>
-        {/* <button className="btn btn-primary" onClick={this.createCustomer}>New Customer</button> */}
         {this.displaycreateModal()}
-        {/* <button className="btn btn-primary" onClick={this.onClickButton}>Modal</button> */}
+        <h2>ID: {this.state.id} </h2>
+        <button onClick={this.highestIDReturn}>Return highest ID</button>
+        <button onClick={this.increment}>Increment</button>
         <Table celled>
           <Table.Header>
           <Table.Row>
@@ -248,18 +253,9 @@ export class StoreIndex extends Component {
                     <Table.Cell>{s.address}</Table.Cell>
                     <Table.Cell >                    
                      {this.displayeditModal(s.id)} 
-                        
                     </Table.Cell>
                     <Table.Cell>
                       {this.displaydeleteModal(s.id)}
-                      {/* <Button  className="btn btn-primary" onClick={() => this.deleteModalOn(s.id)}>Delete</Button>
-                      <Modal 
-                      open={this.state.deleteModal[s.id]} 
-                      onClose={this.deleteModalOff}>
-                      <h1>Are you sure?</h1>
-                      <Button  onClick={() => this.deleteStore(s.id)} onClose={this.deleteModalOff}>Yes</Button>
-                       </Modal> */}
-
                     </Table.Cell>
                     </Table.Row>
                    

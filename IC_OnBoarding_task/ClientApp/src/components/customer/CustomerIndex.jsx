@@ -14,17 +14,22 @@ export class CustomerIndex extends Component {
   
   constructor(props) {
     super(props);
+
     this.state = {
       test_count: 1,
+      last_id: 0,
       customers: [],
       editModal: false,
       deleteModal: false,
       createModal: false,
-    }
-    this.incrementCounter = this.incrementCounter.bind(this);
+      table_length: null,
+    };
+    this.increment = this.increment.bind(this);
+    this.highestIDReturn = this.highestIDReturn.bind(this);
     this.createCustomer = this.createCustomer.bind(this);
     this.deleteCustomer = this.deleteCustomer.bind(this);
     this.changeHandler = this.changeHandler.bind(this);
+
   
   }
   
@@ -33,24 +38,30 @@ export class CustomerIndex extends Component {
     this.setState({test_count: this.state.test_count + 1}, () => { console.log("new state",this.state);})
   }
   // 
+  increment = () => {
+    this.setState({
+      id: this.state.id + 1,
+    })
+    console.log("ID: "+ this.state.id);
+  }
 
-  incrementCounter = () => {
-    var last_id = Math.max.apply(Math,this.state.customers.map(cus => cus.id)) ; 
-    
-    // if (last_id === 0) {
-    //   alert("Error");
-    // }
-    // else
-    // { 
-      this.setState({id: last_id + 1} , () => {
-        console.log("highest ID : " + last_id);
-        console.log("ID will be: " + this.state.id);
-      }) 
+  highestIDReturn = () => {
+    if (this.state.customers.length === 0){
+      console.log("customer length: 0");
+      this.setState({ id: 1})
     }
- // }
-    
+    else if (this.state.id > 0) {
+          var last_id = Math.max.apply(Math,this.state.customers.map(cus => cus.id)); 
+          console.log("Last id: "+ last_id);  
+          this.setState({ id: last_id + 1 } , () => {
+          console.log("highest ID : " + last_id);
+          console.log("ID will be: " + this.state.id);
+          //alert("ID :" + this.state.id);
+          }) 
+        }
+    else { alert("No Action"); }    
+    }
 
-  
   changeHandler = e => {
       this.setState({
         [e.target.name]: e.target.value,
@@ -77,7 +88,6 @@ export class CustomerIndex extends Component {
         console.log(res.data);
         this.setState({
           customers: res.data,
-          //openModal: false
         });
       })
       .catch((e) => {
@@ -86,14 +96,8 @@ export class CustomerIndex extends Component {
   }
 
   createCustomer = e => {
-
-
-    console.log(this.state);
     e.preventDefault();
-    this.incrementCounter();
-    
-    
-
+    this.increment();
       axios.post(`/Customers/PostCustomer`, {
         id: this.state.id,
         name: this.state.name,
@@ -103,44 +107,42 @@ export class CustomerIndex extends Component {
         if (json){
         alert("Data Saved Successfully");
         this.props.history.push('/customer')
+        this.fetchCustomer();
       }
       else {
         alert('Data not saved');
         this.props.history.push('/customer')}
       })
       this.createModalOff();
-      
-      this.fetchCustomer();  
       this.props.history.push('/customer');
+      this.fetchCustomer(); 
     }
     
-
-
-  // createCustomer2 = e => {
-  //   e.preventDefault();
-  //   //console.log(this.state);
-  //   this.incrementCounter();
-  //   axios.post(`/Customers/PostCustomer` ,
-  //     {
-
-  //       id: this.state.currentCount,
-  //       name: "Arthur from state",
-  //       address: "this.state",
-        
-  //     }
-  //   )
-  //   console.log("Customer: "+ this.state.customers);    
-  //   console.log(this.state);
-  //   this.fetchCustomer();
-  // }
   putCustomer = (id) => { // take putCustomer_by_id from MVC controller 
     console.log(this.state);
-    axios.put("/Customers/Put_Customer_by_id/"+id , this.state
+    // axios.put("/Customers/Put_Customer_by_id/"+id , this.state
+    // )
+    axios.put("/Customers/Put_Customer_by_id/"+id , {
+      id: this.state.id,
+      name: this.state.name,
+      address: this.state.address
+    }
     )
-    console.log(this.state);
-    console.log("put at: "+ id);
-    this.fetchCustomer();
+    .then(json => {
+      if(json) {
+         alert("Data Changed Successfully");
+
+        this.editModalOff();
+        this.props.history.push('/customer');
+        this.fetchCustomer();
+      }
+      else {
+        alert('Data not saved');
+        this.props.history.push('/customer')}
+      })
   }
+  
+
   deleteCustomer = (id) => {
     axios.delete("/Customers/DeleteCustomer/"+id)
     .then(res => {
@@ -155,12 +157,11 @@ export class CustomerIndex extends Component {
 
   //------------------------------------ Modal functions---------------------------------------------
 
-
-
   createModalOn = () => {
     this.setState({
       createModal : true
     })
+    this.highestIDReturn();
     console.log("create modal on");
   }
   createModalOff = () => {
@@ -191,18 +192,13 @@ export class CustomerIndex extends Component {
   editModalOn = (id) => {
     this.setState({
       editModal: 
-      {
-        [id] : true,
-      },
+      { [id] : true },
     });
     console.log("edit modal on "+ id);
   }
   editModalOff = (id) => {
     this.setState({
       editModal : false
-      // {
-      //    [id] : false,
-      // },
     }) 
     console.log("edit  modal off");
   }
@@ -259,13 +255,13 @@ export class CustomerIndex extends Component {
 
   componentDidMount()  {
     console.log("Component did mount");
-    document.title = `customer ID is ${this.state.id}`;
+    this.setState({id: 1});
     this.fetchCustomer();
   }
   componentDidUpdate() {
     console.log("Component did update!!!!!!!!");
-    console.log("STATE: ", this.state);
-
+    //this.highestIDReturn();
+    //console.log("STATE: ", this.state);
   }
 
 
@@ -277,12 +273,13 @@ export class CustomerIndex extends Component {
       <div>
         <h1>Customer</h1>
         <div>
-        <button onClick={this.updateState}>Change state</button>
-        <h2>ID: {this.state.id} </h2>
+        {/* <button onClick={this.updateState}>Change state</button> */}
+        
         </div>
-        {/* <button className="btn btn-primary" onClick={this.createCustomer}>New Customer</button> */}
         {this.displaycreateModal()}
-        {/* <button className="btn btn-primary" onClick={this.onClickButton}>Modal</button> */}
+        <h2>ID: {this.state.id} </h2>
+        <button onClick={this.highestIDReturn}>Return highest ID</button>
+        <button onClick={this.increment}>Increment</button>
         <Table celled>
           <Table.Header>
           <Table.Row>
@@ -300,25 +297,15 @@ export class CustomerIndex extends Component {
                     <Table.Cell>{c.address}</Table.Cell>
                     <Table.Cell >                    
                      {this.displayeditModal(c.id)} 
-                        
-
                     </Table.Cell>
                     <Table.Cell>
                      {this.displaydeleteModal(c.id)}
-                      {/* <Button  className="btn btn-primary" onClick={() => this.deleteModalOn(c.id)}>Delete</Button>
-                      <Modal 
-                      open={this.state.deleteModal[c.id]} 
-                      onClose={this.deleteModalOff}>
-                      <h1>Are you sure?</h1>
-                      <Button  onClick={() => this.deleteCustomer(c.id)} onClose={this.deleteModalOff}>Yes</Button>
-                       </Modal> */}
                     </Table.Cell>
                     </Table.Row>
                   );
                 })}
              </Table.Body>
           </Table>
-          {/* <CustomerListTable customers={customers} fetchCustomer={this.fetchCustomer} deleteCustomer={this.deleteCustomer} edit_function={this.edit_function} />  */}
           </div>
     ); 
   }

@@ -11,7 +11,7 @@ export class ProductIndex extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentCount: 0,
+      last_id: 0,
       products: [],  
       editModal: false,
       deleteModal: false,
@@ -21,38 +21,42 @@ export class ProductIndex extends Component {
     
   }
 
-  incrementCounter = () => {
-    var last_id = Math.max.apply(null, this.state.products.map(prod => prod.id))      
+  increment = () => {
     this.setState({
-        id: last_id + 1,
-      });    
-      console.log("ID will be: " + this.state.currentCount);
-    console.log("product length: "+ this.state.products.length);
-
-  }
-
-
-  changeHandler = e => {
-    this.setState({ 
-      [e.target.name]: e.target.value,
-      [e.target.price]: e.target.value,
-     })
-  }
-
-  changeHandler2 = e => {
-    this.setState({
-      id: this.state.currentCount,
-      [e.target.name]: e.target.value,
-      [e.target.price]: e.target.value,
+      id: this.state.id + 1,
     })
+    console.log("ID: "+ this.state.id);
   }
 
+  highestIDReturn = () => {
+    if (this.state.products.length === 0){
+      console.log("product length: 0");
+      this.setState({ id: 1})
+    }
+    else if (this.state.id > 0) {
+          var last_id = Math.max.apply(Math,this.state.products.map(prod => prod.id)); 
+          console.log("Last id: "+ last_id);  
+          this.setState({ id: last_id + 1 } , () => {
+          console.log("highest ID : " + last_id);
+          console.log("ID will be: " + this.state.id);
+          //alert("ID :" + this.state.id);
+    }) 
+        }
+    else {
+      alert("No Action");
+      }    
+    }
+    changeHandler = e => {
+      this.setState({
+        [e.target.name]: e.target.value,
+        [e.target.address]: e.target.value,
+      }, 
+      () => { 
+        console.log("handler state: " + this.state);
+      }
+      );    
+    };
 
-
-  submitHandler = e => {
-    e.preventDefault();
-    console.log(this.state);
-  }
 
   fetchProduct = () => {
     console.log("Fetching Product");
@@ -62,7 +66,6 @@ export class ProductIndex extends Component {
         console.log(res.data);
         this.setState({
           products : res.data,
-          //openModal: false
         });
       })
       .catch((e) => {
@@ -73,22 +76,30 @@ export class ProductIndex extends Component {
   
 
   createProduct = e => {
-    this.incrementCounter();
     e.preventDefault();
+    this.increment();
     //console.log(this.state);
       axios.post(`/Products/PostProduct`, {
         id: this.state.id,
         name: this.state.name,
         price: this.state.price
       })
-    .then(res => {
-      console.log(res)
-    })
-    .catch(e => {
-      this.fetchCustomer();
-      console.log(e);
-    });
-  }
+      .then(json => {
+        if(json) {
+          alert("Data Saved Successfully");
+          this.props.history.push('/product')
+          this.fetchProduct();
+        } 
+        else {
+          alert("Data not saved");
+          this.props.history.push('/product')}
+        })
+        this.createModalOff();
+        this.props.history.push('/product');
+        this.fetchProduct();
+      }
+
+
 
   putProduct = (id) => { // take putProduct_by_id from MVC controller 
 
@@ -114,11 +125,10 @@ export class ProductIndex extends Component {
   //------------------------------------ Modal functions---------------------------------------------
 
   createModalOn = () => {
-    
     this.setState({
-      // currentCount : this.state.currentCount + 1,
       createModal : true
     })
+    this.highestIDReturn();
     console.log("create modal on");
   }
 
@@ -140,7 +150,6 @@ export class ProductIndex extends Component {
                   <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
                   <i>Price: </i><br></br><input type="text" name="price" onChange={this.changeHandler}/>
                 </form>
-                <h2>Enter new Product</h2> 
                 <Button className="btn btn-primary" onClick={this.createProduct}>Create</Button>
               </Modal>   
       </div>
@@ -150,10 +159,7 @@ export class ProductIndex extends Component {
   editModalOn = (id) => {
     this.setState({
       editModal: 
-      //true
-      {
-        [id] : true,
-      },
+      { [id] : true },
     });
     console.log("edit modal on "+ id);
   }
@@ -161,11 +167,7 @@ export class ProductIndex extends Component {
 
   editModalOff = (id) => {
     this.setState({
-      editModal : 
-      false
-      // {
-      //    [id] : false,
-      // },
+      editModal : false
     }) 
     console.log("edit  modal off");
   }
@@ -195,11 +197,7 @@ export class ProductIndex extends Component {
   }
   deleteModalOn = (id) => {
     this.setState({
-      deleteModal: 
-      //true
-      {
-        [id] : true
-      }
+      deleteModal:  { [id] : true }
     })
     console.log("delete modal on");
   }
@@ -224,25 +222,28 @@ export class ProductIndex extends Component {
     )
   }
 
-
   componentDidMount()  {
     console.log("Component did mount");
+    this.setState({id: 1});
     this.fetchProduct();
   }
+  componentDidUpdate() {
+    console.log("Component did update!!!!!!!!");
+    //this.highestIDReturn();
+    //console.log("STATE: ", this.state);
+  }
+
+
 
   render() {
     const { products } = this.state;
-    //const { id, name, address } = this.state.customers;
-    // console.log(this.state.a_vec);
-    // const mapped_vec = this.state.a_vec.map((num) => num *2);
-    // console.log(mapped_vec);
-    
   return (
     <div>
       <h1>Product</h1>
-      {/* <button className="btn btn-primary" onClick={this.createCustomer}>New Customer</button> */}
       {this.displaycreateModal()}
-      {/* <button className="btn btn-primary" onClick={this.onClickButton}>Modal</button> */}
+      <h2>ID: {this.state.id} </h2>
+      <button onClick={this.highestIDReturn}>Return highest ID</button>
+      <button onClick={this.increment}>Increment</button>
       <Table celled>
         <Table.Header>
         <Table.Row>
@@ -264,15 +265,6 @@ export class ProductIndex extends Component {
                   </Table.Cell>
                   <Table.Cell>
                    {this.displaydeleteModal(p.id)}
-                    {/* <Button  className="btn btn-primary" onClick={() => this.deleteModalOn(p.id)}>Delete</Button>
-                    <Modal 
-                    open={this.state.deleteModal[p.id]} 
-                    onClose={this.deleteModalOff}>
-                    <h1>Are you sure?</h1>
-                    <Button  onClick={() => this.deleteProduct(p.id)} onClose={this.deleteModalOff}>Yes</Button>
-
-                     </Modal>
-                      */}
                   </Table.Cell>
                   </Table.Row>
                  
