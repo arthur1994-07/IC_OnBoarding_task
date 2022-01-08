@@ -333,8 +333,8 @@ export class SalesIndex extends Component {
   displayeditModal = (id) => {
     return (
       <div>
-      <Button className="btn btn-primary" onClick={this.editModalOn}>Edit</Button>
-            <Modal className="popup" open={this.state.editModal} onClose={this.editModalOff} >
+      <Button className="btn btn-primary" onClick={() => this.editModalOn(id)}>Edit</Button>
+            <Modal className="popup" open={this.state.editModal[id]} onClose={() => this.editModalOff(id)} >
               <h1>Edit Sales</h1>
               <form onSubmit={this.submitHandler}>
               <i>Date Sold:  </i><br></br>
@@ -372,7 +372,7 @@ export class SalesIndex extends Component {
                </select>
               </form>
               
-              <Button className="btn btn-primary" onClick={this.putSales}>Edit</Button>
+              <Button className="btn btn-primary" onClick={() => this.putSales(id)}>Edit</Button>
             </Modal>   
     </div>
       
