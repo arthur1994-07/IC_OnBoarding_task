@@ -16,9 +16,12 @@ export class ProductIndex extends Component {
       editModal: false,
       deleteModal: false,
       createModal: false,
-      a_vec : [1, 2, 3, 4, 5],       
     };
-    
+    this.increment = this.increment.bind(this);
+    this.highestIDReturn = this.highestIDReturn.bind(this);
+    this.createProduct = this.createProduct.bind(this);
+    this.deleteProduct = this.deleteProduct.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
   }
 
   increment = () => {
@@ -46,16 +49,16 @@ export class ProductIndex extends Component {
       alert("No Action");
       }    
     }
+
+
     changeHandler = e => {
       this.setState({
         [e.target.name]: e.target.value,
-        [e.target.address]: e.target.value,
-      }, 
-      () => { 
+        [e.target.price]: e.target.value,
+      }, () => { 
         console.log("handler state: " + this.state);
-      }
-      );    
-    };
+      });    
+    }
 
 
   fetchProduct = () => {
@@ -102,13 +105,23 @@ export class ProductIndex extends Component {
 
 
   putProduct = (id) => { // take putProduct_by_id from MVC controller 
-
     console.log(this.state);
-    axios.put("/Products/Put_Product_by_id/"+id , this.state
-    )
-    console.log(this.state);
-    console.log("put at: "+ id);
-    this.fetchProduct();
+    axios.put("/Products/Put_Product_by_id/"+id , {
+      id: this.state.id,
+      name: this.state.name,
+      price: this.state.price
+    }).then(json => {
+      if (json) {
+        alert("Data Changed Sucessfully");
+        this.editModalOff();
+        this.props.history.push('/product');
+        this.fetchProduct();
+      }
+      else {
+        alert('Data not saved');
+        this.props.history.push('/product')
+      }
+    })
   }
 
   deleteProduct = (id) => {
@@ -146,7 +159,6 @@ export class ProductIndex extends Component {
               <Modal open={this.state.createModal} onClose={this.createModalOff} >
                 <h1>Create new Product</h1>
                 <form>
-                  {/* <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br> */}
                   <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
                   <i>Price: </i><br></br><input type="text" name="price" onChange={this.changeHandler}/>
                 </form>
@@ -186,8 +198,8 @@ export class ProductIndex extends Component {
                   <h2>Edit Product</h2>
                   <form>
                     {/* <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br> */}
-                    <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler2}/><br></br>
-                    <i>Price: </i><br></br><input type="text" name="price" onChange={this.changeHandler2}/>
+                    <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
+                    <i>Price: </i><br></br><input type="text" name="price" onChange={this.changeHandler}/>
                   </form>
                 <Button className="btn btn-primary" onClick={() => this.putProduct(id)}>update</Button>
                 </div>         
@@ -241,9 +253,9 @@ export class ProductIndex extends Component {
     <div>
       <h1>Product</h1>
       {this.displaycreateModal()}
-      <h2>ID: {this.state.id} </h2>
+      {/* <h2>ID: {this.state.id} </h2>
       <button onClick={this.highestIDReturn}>Return highest ID</button>
-      <button onClick={this.increment}>Increment</button>
+      <button onClick={this.increment}>Increment</button> */}
       <Table celled>
         <Table.Header>
         <Table.Row>

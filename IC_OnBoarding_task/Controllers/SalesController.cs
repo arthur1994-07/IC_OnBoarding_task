@@ -135,6 +135,8 @@ namespace IC_OnBoarding_task.Controllers
             return StatusCode(500);
         }
 
+
+
         // DELETE: api/Sales/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Sales>> DeleteSales(int id)

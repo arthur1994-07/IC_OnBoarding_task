@@ -34,3 +34,36 @@ code {
   bottom: 40px;
   background-color: papayawhip;
 }
+#container {
+  position: relative;
+  height: 250px;
+  border: 1px solid black;
+}
+
+#dropdownHeader {
+  width: 100%;
+  max-width: 12em;
+  padding: 0.2em 0 0.2em 0.2em;
+  margin: 1em;
+  cursor: pointer;
+  box-shadow: 0 1px 4px 3px rgba(34, 36, 38, 0.15);
+}
+
+#dropdownContent {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 3em;
+  width: 100%;
+  max-width: 12em;
+  margin-left: 1em;
+  box-shadow: 0 1px 4px 0 rgba(34, 36, 38, 0.15);
+  padding: 0.2em;
+}
+
+#item {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0.75em 1em 0.75em 2em;
+  cursor: pointer;
+}

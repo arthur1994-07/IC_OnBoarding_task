@@ -16,7 +16,6 @@ export class CustomerIndex extends Component {
     super(props);
 
     this.state = {
-      test_count: 1,
       last_id: 0,
       customers: [],
       editModal: false,
@@ -29,14 +28,9 @@ export class CustomerIndex extends Component {
     this.createCustomer = this.createCustomer.bind(this);
     this.deleteCustomer = this.deleteCustomer.bind(this);
     this.changeHandler = this.changeHandler.bind(this);
+  }
+  
 
-  
-  }
-  
-  updateState = () => {
-    console.log('Changing state');
-    this.setState({test_count: this.state.test_count + 1}, () => { console.log("new state",this.state);})
-  }
   // 
   increment = () => {
     this.setState({
@@ -51,12 +45,12 @@ export class CustomerIndex extends Component {
       this.setState({ id: 1})
     }
     else if (this.state.id > 0) {
-          var last_id = Math.max.apply(Math,this.state.customers.map(cus => cus.id)); 
+          var last_id = Math.max.apply(Math ,this.state.customers.map(cus => cus.id)); 
           console.log("Last id: "+ last_id);  
           this.setState({ id: last_id + 1 } , () => {
-          console.log("highest ID : " + last_id);
-          console.log("ID will be: " + this.state.id);
-          //alert("ID :" + this.state.id);
+            console.log("highest ID : " + last_id);
+            console.log("ID will be: " + this.state.id);
+            // alert("ID :" + this.state.id);
           }) 
         }
     else { alert("No Action"); }    
@@ -66,12 +60,10 @@ export class CustomerIndex extends Component {
       this.setState({
         [e.target.name]: e.target.value,
         [e.target.address]: e.target.value,
-      }, 
-      () => { 
+      }, () => { 
         console.log("handler state: " + this.state);
-      }
-      );    
-    };
+      });    
+    }
     // e.target.value => selected input / typed input
     // [e.target.name] => input field name 
   //}
@@ -126,9 +118,7 @@ export class CustomerIndex extends Component {
       id: this.state.id,
       name: this.state.name,
       address: this.state.address
-    }
-    )
-    .then(json => {
+    }).then(json => {
       if(json) {
          alert("Data Changed Successfully");
 
@@ -138,11 +128,11 @@ export class CustomerIndex extends Component {
       }
       else {
         alert('Data not saved');
-        this.props.history.push('/customer')}
+        this.props.history.push('/customer')
+        }
       })
   }
   
-
   deleteCustomer = (id) => {
     axios.delete("/Customers/DeleteCustomer/"+id)
     .then(res => {
@@ -153,6 +143,7 @@ export class CustomerIndex extends Component {
       console.log(e);
     });
   }
+
 
 
   //------------------------------------ Modal functions---------------------------------------------
@@ -170,8 +161,6 @@ export class CustomerIndex extends Component {
     })
     console.log("create modal off");
   }
-
-
 
   displaycreateModal = () => { 
     return ( 
@@ -258,10 +247,9 @@ export class CustomerIndex extends Component {
     this.setState({id: 1});
     this.fetchCustomer();
   }
+  
   componentDidUpdate() {
     console.log("Component did update!!!!!!!!");
-    //this.highestIDReturn();
-    //console.log("STATE: ", this.state);
   }
 
 
@@ -277,9 +265,9 @@ export class CustomerIndex extends Component {
         
         </div>
         {this.displaycreateModal()}
-        <h2>ID: {this.state.id} </h2>
+        {/* <h2>ID: {this.state.id} </h2>
         <button onClick={this.highestIDReturn}>Return highest ID</button>
-        <button onClick={this.increment}>Increment</button>
+        <button onClick={this.increment}>Increment</button> */}
         <Table celled>
           <Table.Header>
           <Table.Row>

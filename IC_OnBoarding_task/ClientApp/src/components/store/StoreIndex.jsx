@@ -17,7 +17,11 @@ export class StoreIndex extends Component {
        deleteModal: false,
        createModal: false,
     };
-    
+    this.increment = this.increment.bind(this);
+    this.highestIDReturn = this.highestIDReturn.bind(this);
+    this.createStore = this.createStore.bind(this);
+    this.deleteStore = this.deleteStore.bind(this);
+    this.changeHandler = this.changeHandler.bind(this);
   }
 
   increment = () => {
@@ -48,11 +52,9 @@ export class StoreIndex extends Component {
     this.setState({
       [e.target.name]: e.target.value,
       [e.target.address]: e.target.value,
-    }, 
-    () => { 
+    }, () => { 
       console.log("handler state: " + this.state);
-    }
-    );    
+    });    
   };
 
 //--------------------------------Http axios functions---------------------------------------
@@ -92,7 +94,6 @@ export class StoreIndex extends Component {
         this.props.history.push('/store')}
       })
       this.createModalOff();
-       
       this.props.history.push('/store');
       this.fetchStore(); 
     }
@@ -100,12 +101,21 @@ export class StoreIndex extends Component {
   putStore = (id) => { // take putProduct_by_id from MVC controller 
 
     console.log(this.state);
-    axios.put("/Stores/Put_Store_by_id/"+id , this.state
-    )
-
-    console.log(this.state);
-    console.log("put at: "+ id);
-    this.fetchStore();
+    axios.put("/Stores/Put_Store_by_id/"+id , {
+      id : this.state.id,
+      name : this.state.name,
+      address: this.state.address
+    }).then(json => {
+      if(json) {
+        alert("Data Changed Successfully");
+        this.editModalOff();
+        this.props.history.push('/customer');
+        this.fetchStore();
+      } else {
+        alert("Data not saved");
+        this.props.history.push('/store')
+      }
+    })
   }
 
   deleteStore = (id) => {
@@ -178,8 +188,8 @@ export class StoreIndex extends Component {
                   <h2>Edit Store</h2>
                   <form>
                     {/* <i>ID: </i><br></br><input type="text" name="id" onChange={this.changeHandler}/><br></br> */}
-                    <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler2}/><br></br>
-                    <i>Address: </i><br></br><input type="text" name="address" onChange={this.changeHandler2}/>
+                    <i>Name: </i><br></br><input type="text" name="name" onChange={this.changeHandler}/><br></br>
+                    <i>Address: </i><br></br><input type="text" name="address" onChange={this.changeHandler}/>
                   </form>
                 <Button className="btn btn-primary" onClick={() => this.putStore(id)}>update</Button>
                 </div>         
@@ -233,9 +243,9 @@ export class StoreIndex extends Component {
       <div>
         <h1>Store</h1>
         {this.displaycreateModal()}
-        <h2>ID: {this.state.id} </h2>
+        {/* <h2>ID: {this.state.id} </h2>
         <button onClick={this.highestIDReturn}>Return highest ID</button>
-        <button onClick={this.increment}>Increment</button>
+        <button onClick={this.increment}>Increment</button> */}
         <Table celled>
           <Table.Header>
           <Table.Row>

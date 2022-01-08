@@ -8,7 +8,6 @@ import { CustomerIndex } from "./components/customer/CustomerIndex";
 import { ProductIndex } from "./components/product/ProductIndex";
 import { StoreIndex } from "./components/store/StoreIndex";
 import { SalesIndex } from "./components/sales/SalesIndex";
-import { ModalInClassComponents } from './components/customer/ModalInClassComponents';
 import { FlavorForm } from './components/sales/FlavorForm';
 
 export default class App extends Component {
@@ -25,7 +24,6 @@ export default class App extends Component {
         <Route path='/product' component={ProductIndex} />
         <Route path='/store' component={StoreIndex} />
         <Route path='/sales' component={SalesIndex} />
-        <Route path='/modal' component={ModalInClassComponents} />
         <Route path='/flavorform' component={FlavorForm} />
 
       </Layout>

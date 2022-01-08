@@ -13,17 +13,16 @@ export class SalesIndex extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      sales: [{}],
-       customers : [{}],
-       products : [{}],
-       stores : [{}],
-       last_id : 0,
+      sales: [],
+      customers : [],
+      products : [],
+      stores : [],
+      last_id : 0,
 
        currentCount : 0,
        editModal: false,
        deleteModal: false,
-       createModal: false,
-       a_vec : [1, 2, 3, 4, 5],    
+       createModal: false,  
        drop_down_value: '' ,
        drop_down_customer: '',
        drop_down_product: '',
@@ -40,6 +39,7 @@ export class SalesIndex extends Component {
     })
     console.log("ID: "+ this.state.id);
   }
+
   highestIDReturn = () => {
     if (this.state.sales.length === 0){
       console.log("sales length: 0");
@@ -57,21 +57,6 @@ export class SalesIndex extends Component {
     else { alert("No Action"); }    
     }
 
-  incrementCounter = () => {
-    if (this.state.currentCount < this.state.sales.length){
-      this.setState({
-        currentCount: this.state.currentCount + 1,
-      });    
-      console.log("Sales ID will be: " + this.state.currentCount);
-
-    } 
-
-      
-    console.log("sales length: "+ this.state.sales.length);
-
-  }
-
-  
 // ---------------------------------------------------------------------
   changeHandler_dropdown = (e) => { // for dropdown select input
     console.log('dropdown value: '+ e.target.value); 
@@ -82,13 +67,15 @@ export class SalesIndex extends Component {
   }
 
  
-  //----------------------------------------------------------------------
+  //----------------------------------dropListHandler------------------------------------
+
   changeHandler_dropdown_customer = (e) => { // for dropdown select input
-    console.log('dropdown customer: '+ e.target.value); 
+    console.log('dropdown customer: '+ e.target.value);
     this.setState({
       drop_down_customer : e.target.value,
     });
   }
+
   submitHandler_customer = e => { // console print dropdown selection 
     e.preventDefault();
     console.log("state value: "+ this.state.drop_down_customer);
@@ -124,12 +111,7 @@ export class SalesIndex extends Component {
 
   //---------------------------------------------------------------------
   changeHandler = e => { // for text input 
-    this.setState({      
-      customer: this.state.drop_down_customer,
-      product: this.state.drop_down_product,
-      store: this.state.drop_down_store,
-      dateSold: e.target.value, 
-     })
+    this.setState({ dateSold: e.target.value})
   }
 
   submitHandler = e => { // console print dropdown selection 
@@ -137,20 +119,6 @@ export class SalesIndex extends Component {
     console.log("state value: "+ this.state.drop_down_value);
   }
 
-  // getSales_by_id = (id) =>{
-  //   console.log("get sales by id");
-  //   axios
-  //   .get("Sales/GetSales"/+id)
-  //   .then((res) => {
-  //     console.log(res.data);
-  //     this.setState({
-  //       sales : res.data,
-  //     });
-  //   })
-  //   .catch((e) => {
-  //     console.log(e);
-  //   });
-  // };
   fetchCustomer = () => {
     console.log("Fetching Customer");
     axios
@@ -165,7 +133,8 @@ export class SalesIndex extends Component {
       .catch((e) => {
         console.log(e);
       });
-  };
+  }
+
   fetchProduct = () => {
     console.log("Fetching Product");
     axios
@@ -180,7 +149,7 @@ export class SalesIndex extends Component {
       .catch((e) => {
         console.log(e);
       });
-  };
+  }
 
   fetchStore = () => {
     console.log("Fetching Store");
@@ -196,7 +165,7 @@ export class SalesIndex extends Component {
       .catch((e) => {
         console.log(e);
       });
-  };
+  }
 
   fetchSales = () => {
     console.log("Fetching sales");
@@ -211,10 +180,8 @@ export class SalesIndex extends Component {
       .catch((e) => {
         console.log(e);
       });
-  };
+  }
 
-
- 
   createSales = e => {
     e.preventDefault();
     this.increment();
@@ -243,26 +210,25 @@ export class SalesIndex extends Component {
     }
 
   putSales = (id) => { // take putProduct_by_id from MVC controller 
-      axios.put("/Sales/Put_Sales_by_id/"+id , {
+      axios.put("/Sales/Put_Sales_by_id/"+ id , {
         id: this.state.id,
         dateSold: this.state.dateSold,
         customer: this.state.drop_down_customer,
         product: this.state.drop_down_product,
         store: this.state.drop_down_store,
+      }).then(json => {
+        if (json) {
+          alert("Data Changed Successfully");
+          this.editModalOff();
+          this.props.history.push('/sales');
+          this.fetchSales();
+        }
+        else {
+          alert('Data not saved');
+          this.props.history.push('/sales')
+          }
       })
-      console.log(this.state);
-      console.log("put at: "+ id);
-      this.fetchSales();
     }
-
-  // putSales = (id) => { // take putProduct_by_id from MVC controller 
-  //   console.log(this.state);
-  //   axios.put("/Sales/Put_Sales_by_id/"+id , this.state
-  //   )
-  //   console.log(this.state);
-  //   console.log("put at: "+ id);
-  //   this.fetchProduct();
-  // }
 
   deleteSales = (id) => {
     axios.delete("/Sales/DeleteSales/"+id)
@@ -284,6 +250,7 @@ export class SalesIndex extends Component {
     this.highestIDReturn();
     console.log("create modal on");
   }
+
   createModalOff = () => {
     this.setState({
       createModal : false
@@ -312,7 +279,6 @@ export class SalesIndex extends Component {
                 })}
                 </select>
                 </form>
-
                 <form onSubmit={this.submitHandler_product}>
                 <br></br><i>Products:  </i><br></br>
                 <select value={this.state.drop_down_product} onChange={this.changeHandler_dropdown_product}>
@@ -415,17 +381,14 @@ export class SalesIndex extends Component {
   deleteModalOn = (id) => {
     this.setState({
       deleteModal: 
-      {
-        [id] : true
-      }
+      {[id] : true}
     })
-    console.log("delete modal on");
   }
+
   deleteModalOff = () => {
     this.setState({
       deleteModal : false
     })
-    console.log("delete modal off");
   }
 
   displaydeleteModal = (id) => {
