@@ -430,9 +430,9 @@ export class SalesIndex extends Component {
       <div>
         <h1>Sales</h1>
         {this.displaycreateModal()}
-        <h2>ID: {this.state.id} </h2>
+        {/* <h2>ID: {this.state.id} </h2>
         <button onClick={this.highestIDReturn}>Return highest ID</button>
-        <button onClick={this.increment}>Increment</button>
+        <button onClick={this.increment}>Increment</button> */}
         <Table celled>
           <Table.Header>
           <Table.Row>
