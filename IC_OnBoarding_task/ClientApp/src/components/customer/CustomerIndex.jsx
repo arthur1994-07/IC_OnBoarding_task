@@ -50,7 +50,6 @@ export class CustomerIndex extends Component {
           this.setState({ id: last_id + 1 } , () => {
             console.log("highest ID : " + last_id);
             console.log("ID will be: " + this.state.id);
-            // alert("ID :" + this.state.id);
           }) 
         }
     else { alert("No Action"); }    
@@ -64,12 +63,8 @@ export class CustomerIndex extends Component {
         console.log("handler state: " + this.state);
       });    
     }
-    // e.target.value => selected input / typed input
-    // [e.target.name] => input field name 
-  //}
 
-
-
+    
 //--------------------------------Http axios functions---------------------------------------
   
   fetchCustomer = () => {
