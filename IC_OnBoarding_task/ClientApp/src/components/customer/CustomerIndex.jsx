@@ -252,18 +252,12 @@ export class CustomerIndex extends Component {
     console.log("Component did update!!!!!!!!");
   }
 
-
-
-
   render() {
       const { customers } = this.state;      
     return (
       <div>
         <h1>Customer</h1>
-        <div>
-        {/* <button onClick={this.updateState}>Change state</button> */}
-        
-        </div>
+ 
         {this.displaycreateModal()}
         {/* <h2>ID: {this.state.id} </h2>
         <button onClick={this.highestIDReturn}>Return highest ID</button>

@@ -1,12 +1,5 @@
 import React, { Component } from 'react';
 
-const items = [
-  { value : 'User1' }, 
-  { value : 'User2' }, 
-  { value : 'User3' }, 
-  { value : 'User4' }, 
-  { value : 'User5' } 
-];
 
 export class Counter extends Component {
   static displayName = Counter.name;
@@ -26,6 +19,7 @@ export class Counter extends Component {
 
   componentDidMount() {
     const { isActive } = this.state;
+    
     document.addEventListener('click', (evt) => {
         if (evt.target.closest('#dropdownContent')) {
           console.warn('clicked the content');
@@ -46,26 +40,35 @@ export class Counter extends Component {
   
   render() {
     const { isActive } = this.state;
+    const items = [
+      { value : 'User1' }, 
+      { value : 'User2' }, 
+      { value : 'User3' }, 
+      { value : 'User4' }, 
+      { value : 'User5' } 
+    ];
+    
     return (
       
       <div id="container">
-        <h1>Counter</h1>
+        <h1>Class Component Test</h1>
 
-        <p>This is a simple example of a React component.</p>
+        <p>Counter test</p>
 
         <p aria-live="polite">Current count: <strong>{this.state.currentCount}</strong></p>
 
         <button className="btn btn-primary" onClick={this.incrementCounter}>Increment</button>
+        <p></p>
 
-        <div id="dropdownHeader">select option</div>
+        <button className="btn-secondary" id="dropdownHeader">select option</button>
         {isActive && (
-          <div id="dropdownContent">
+          <select id="dropdownContent">
           {items.map((i) => (
-            <div id="item" key={i.value}>
+            <option id="item" key={i.value}>
             {i.value}
-            </div>
+            </option>
           ))}
-          </div>
+          </select>
         )}
       </div>
     );

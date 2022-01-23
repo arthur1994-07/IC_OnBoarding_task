@@ -310,22 +310,14 @@ export class SalesIndex extends Component {
   editModalOn = (id) => {
     this.setState({
       editModal: 
-      //true
-      {
-        [id] : true,
-      },
+      { [id] : true },
     });
     console.log("edit modal on "+ id);
   }
 
-
   editModalOff = (id) => {
     this.setState({
-      editModal : 
-      false
-      // {
-      //    [id] : false,
-      // },
+      editModal : false
     }) 
     console.log("edit  modal off");
   }
@@ -333,6 +325,7 @@ export class SalesIndex extends Component {
   displayeditModal = (id) => {
     return (
       <div>
+      
       <Button className="btn btn-primary" onClick={() => this.editModalOn(id)}>Edit</Button>
             <Modal className="popup" open={this.state.editModal[id]} onClose={() => this.editModalOff(id)} >
               <h1>Edit Sales</h1>
@@ -405,9 +398,6 @@ export class SalesIndex extends Component {
     )
   }
 
-
-
-
   componentDidMount()  {
     console.log("Component did mount");
     this.setState({id: 1});
@@ -423,6 +413,7 @@ export class SalesIndex extends Component {
   }
 
   render() {
+    console.log('render');
     const { sales, customers , stores, products } = this.state;
 
 

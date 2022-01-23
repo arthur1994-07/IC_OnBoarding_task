@@ -9,7 +9,7 @@ import { ProductIndex } from "./components/product/ProductIndex";
 import { StoreIndex } from "./components/store/StoreIndex";
 import { SalesIndex } from "./components/sales/SalesIndex";
 import { FlavorForm } from './components/sales/FlavorForm';
-
+import { Test } from './components/Test';
 export default class App extends Component {
   static displayName = App.name;
 
@@ -25,6 +25,7 @@ export default class App extends Component {
         <Route path='/store' component={StoreIndex} />
         <Route path='/sales' component={SalesIndex} />
         <Route path='/flavorform' component={FlavorForm} />
+        <Route path='/test' component={Test} />
 
       </Layout>
     );
