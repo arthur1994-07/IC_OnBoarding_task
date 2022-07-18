@@ -9,7 +9,21 @@ import { throwStatement } from '@babel/types';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
+// The key difference between props and state is that state is internal 
+//and controlled by the component itself while props are external and controlled by whatever renders the component.
 
+/** props
+Props (short for properties) are a Component's configuration. 
+They are received from above and immutable as far as the Component receiving them is concerned. 
+A Component cannot change its props, but it is responsible for putting together the props of its child Components. 
+Props do not have to just be data -- callback functions may be passed in as props.
+
+state
+The state is a data structure that starts with a default value when a Component mounts. 
+It may be mutated across time, mostly as a result of user events.
+A Component manages its own state internally. Besides setting an initial state, 
+it has no business fiddling with the state of its children. You might conceptualize state as private to that component.
+**/
 export class CustomerIndex extends Component {
   
   constructor(props) {
